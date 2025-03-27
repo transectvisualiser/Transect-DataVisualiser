@@ -218,6 +218,10 @@ def get_beach_profile_heatmap():
         print(f"Error creating beach profile heatmap: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/')
+def index():
+    return 'Transect Visualizer Backend is running!'
+
 if __name__ == '__main__':
     app.run(port=5001)
 
