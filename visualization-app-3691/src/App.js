@@ -1,23 +1,7 @@
 import React, { useState } from "react";
 import PlotDisplay from "./components/PlotDisplay";
 import "./App.css";
- 
-const plotKeywords = {
-  scatter: "Scatter",
-  box: "Box",
-  litter: "Histogram",
-  beach_width: "Bar",
-  dunes: "Circular",
-  sediment: "Bar",
-  dendrogram: "Clustering",
-  density: "Density",
-  time: "Time Series",
-  text: "Table",
-  "sediment-distribution": "Distribution",
-  rose: "Wind Rose",
-  stream: "Stream Graph"
-};
- 
+  
  
 const categories = {
   attribute: "Physical Beach Attributes & Morphology",
@@ -71,15 +55,7 @@ function App() {
   };
  
   const allCategories = ["All", ...new Set(Object.values(categories))];
- 
-  const GAP = 30;
- 
-  const gridColumnStyle = {
-    display: "grid",
-    gridGap: `${GAP}px`,
-    gridTemplateColumns: `repeat(${columns}, calc((100% - (${GAP}px * (${columns} - 1))) / ${columns}))`
-  };
- 
+  
   return (
     <div className="app-container">
       <header className="app-header">
