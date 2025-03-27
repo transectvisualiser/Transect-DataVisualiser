@@ -1,0 +1,149 @@
+/* App.css */
+
+.app-container {
+  font-family: 'Arial', sans-serif !important;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e6f0fa, #d0e8f2) !important;
+  color: #000000 !important;
+  padding: 20px;
+  max-width: 100%;
+  width: 95%;
+  margin: auto;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.app-header {
+  background-color: transparent;
+  color: #000000 !important;
+  padding: 2rem 0;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.app-header h1 {
+  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+  color: #000000 !important;
+}
+
+.app-header p {
+  font-size: 1.1rem;
+  opacity: 0.8;
+  color: #000000 !important;
+}
+
+.plot-controls {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 20px;
+  box-sizing: border-box;
+}
+
+.plot-controls label {
+  margin-right: 10px;
+  font-weight: bold;
+  color: #000000;
+}
+
+.plot-controls select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #000000;
+  background-color: white;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" height="24" ...</svg>');
+  background-repeat: no-repeat;
+  background-position-x: 100%;
+  background-position-y: center;
+  padding-right: 30px;
+}
+
+.plot-controls select:focus {
+  outline: none;
+  border-color: #66afe9;
+  box-shadow: 0 0 5px rgba(102, 175, 233, 0.6);
+}
+
+.column-slider {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.column-slider label {
+  margin-right: 8px;
+  font-weight: bold;
+  color: #000000;
+}
+
+.slider-value {
+  margin-left: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+.visualization-grid {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.visualization-item {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-height: 450px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* Keyframe animation for hover effect */
+@keyframes pulseZoom {
+  
+  50% { transform: scale(1.05); }
+
+}
+
+
+.visualization-item:hover {
+  transform: scale(1.05);
+}
+
+.plot-container {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+
+.plot-display {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.app-footer {
+  background-color: #333;
+  color: #eee;
+  text-align: center;
+  padding: 1rem 0;
+  width: 100%;
+  margin-top: auto;
+  font-size: 0.9rem;
+  position: relative;
+  z-index: 1;
+}

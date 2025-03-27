@@ -1,0 +1,18 @@
+Time,Temperature(C),Dew Point (C),Humidity(%),Wind,Wind Speed(km/h),Wind Gust(km/h,Pressure(hpa),Precip.(mm),Condition
+12:00 AM,-13°C,-16°C,79,S,4,0,"1,018.22",0,Partly Cloudy
+12:52 AM,-13°C,-16°C,79,SSE,13,0,"1,018.22",0,Light Snow Shower
+1:00 AM,-13°C,-16°C,79,SE,11,0,"1,018.22",0,Light Snow Shower
+2:00 AM,-13°C,-15°C,85,VAR,4,0,"1,018.22",0,Partly Cloudy
+3:00 AM,-15°C,-16°C,92,CALM,0,0,"1,018.55",0,Fair
+4:00 AM,-13°C,-15°C,85,SSE,11,0,"1,018.22",0,Fair
+5:00 AM,-13°C,-15°C,85,SE,9,0,"1,018.55",0,Partly Cloudy
+6:00 AM,-12°C,-14°C,85,SSE,11,0,"1,019.22",0,Mostly Cloudy
+7:00 AM,-12°C,-14°C,85,S,9,0,"1,019.56",0,Mostly Cloudy
+8:00 AM,-11°C,-14°C,79,SSE,9,0,"1,019.56",0,Mostly Cloudy
+9:00 AM,-10°C,-13°C,79,SW,6,0,"1,019.90",0,Mostly Cloudy
+10:00 AM,-9°C,-13°C,73,W,13,0,"1,019.90",0,Mostly Cloudy
+11:00 AM,-9°C,-15°C,62,W,15,33,"1,019.56",0,Mostly Cloudy
+12:00 PM,-7°C,-15°C,54,WNW,22,35,"1,018.89",0,Mostly Cloudy
+1:00 PM,-7°C,-18°C,42,WNW,20,31,"1,017.88",0,Fair
+2:00 PM,-7°C,-18°C,42,WNW,11,0,"1,016.87",0,Partly Cloudy
+3:00 PM,-7°C,-18°C,42,W,15,0,"1,016.87",0,Mostly Cloudy

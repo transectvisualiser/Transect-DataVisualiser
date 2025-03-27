@@ -1,0 +1,13 @@
+/* index.css */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #e6f0fa, #d0e8f2) !important; /* Apply gradient to body as fallback */
+  color: #000000 !important; /* Ensure black text */
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
