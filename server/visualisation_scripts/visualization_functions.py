@@ -416,9 +416,7 @@ def create_vegetation_cover_dendrogram():
 def create_density_map():
     """Creates an interactive density map of beaches"""
     # Read data
-    file_path = "visualisation_scripts/General List (CSES-NS-Summary-Evaluations).csv"
-    df = pd.read_csv(file_path, na_values=[], keep_default_na=False)
-    
+    validate_dataframe(["Latitude", "Longitude", "Beach width", "CSES Label", "Beach", "Park"])
     # Convert Beach width to numeric
     df["Beach width"] = pd.to_numeric(df["Beach width"], errors="coerce")
     
@@ -459,47 +457,34 @@ def create_density_map():
 
 def create_time_plot():
     """Creates an interactive temperature and dew point plot"""
-    # Read data
-    Air_Temperature = pd.read_csv("visualisation_scripts/Date_Timeplot (4).csv")
-    Air_Temperature["Time"] = pd.to_datetime(Air_Temperature["Time"], format="%I:%M %p")
-    
-    # Convert temperature columns
-    for col in ["Temperature(C)", "Dew Point (C)"]:
-        Air_Temperature[col] = Air_Temperature[col].str.replace("°C", "").astype(float)
-    
-    # Create interactive plot
-    fig = go.Figure()
-    
-    fig.add_trace(go.Scatter(
-        x=Air_Temperature["Time"],
-        y=Air_Temperature["Temperature(C)"],
-        name="Temperature (°C)",
-        mode='lines+markers'
-    ))
-    
-    fig.add_trace(go.Scatter(
-        x=Air_Temperature["Time"],
-        y=Air_Temperature["Dew Point (C)"],
-        name="Dew Point (°C)",
-        mode='lines+markers'
-    ))
-    
-    fig.update_layout(
-        title="Temperature & Dew Point Trend Throughout the Day",
-        xaxis_title="Time of Day",
-        yaxis_title="Temperature (°C) / Dew Point (°C)",
-        hovermode='x unified',
-        height=500
-    )
-    
-    return fig
+    try:
+        file_path = os.path.join(os.path.dirname(__file__), "..", "visualisation_scripts", "Date_Timeplot.csv")
+        df = pd.read_csv(file_path)
+        df["Time"] = pd.to_datetime(df["Time"], format="%I:%M %p")
+
+        for col in ["Temperature(C)", "Dew Point (C)"]:
+            df[col] = df[col].str.replace("°C", "").astype(float)
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=df["Time"], y=df["Temperature(C)"], name="Temperature (°C)", mode='lines+markers'))
+        fig.add_trace(go.Scatter(x=df["Time"], y=df["Dew Point (C)"], name="Dew Point (°C)", mode='lines+markers'))
+
+        fig.update_layout(
+            title="Temperature & Dew Point Trend Throughout the Day",
+            xaxis_title="Time of Day",
+            yaxis_title="Temperature (°C) / Dew Point (°C)",
+            hovermode='x unified',
+            height=500
+        )
+        return fig
+    except Exception as e:
+        print(f"Error creating time plot: {str(e)}")
+        raise
 
 def create_text_table():
     """Creates an interactive visualization of the text table data"""
     # Read data
-    data = pd.read_csv('visualisation_scripts/General List (CSES-NS-Summary-Evaluations).csv')
-    columns = ['Region', 'Cliff height', 'Noise disturbance', 'Vegetation cover']
-    df = pd.DataFrame(data, columns=columns)
+    validate_dataframe(['Region', 'Cliff height', 'Noise disturbance', 'Vegetation cover'])
 
     # Create two subplots
     fig = go.Figure()
@@ -532,8 +517,7 @@ def create_text_table():
 def create_sediment_plot():
     """Creates an interactive sediment distribution plot"""
     # Read data
-    file_path = "visualisation_scripts/General List (CSES-NS-Summary-Evaluations).csv"
-    df = pd.read_csv(file_path)
+    validate_dataframe(['Beach', 'Region', 'Type of sediment'])
     
     # Extract and process data
     df_filtered = df[['Beach', 'Region', 'Type of sediment']].dropna()
@@ -611,107 +595,111 @@ def create_rose_diagram():
 
 
 def create_temperature_plot():
-    file_path = "./data/weather-everyday.json"
-    with open(file_path, "r") as f:
-        data = json.load(f)
+    """Creates a line chart of average temperature over time."""
+    try:
+        json_path = os.path.join(os.path.dirname(__file__), "..", "data", "weather-everyday.json")
+        with open(json_path, "r") as f:
+            data = json.load(f)
 
-    df = pd.json_normalize(data, 'observations')
-    df["obsTimeLocal"] = pd.to_datetime(df["obsTimeLocal"])
+        df = pd.json_normalize(data, 'observations')
+        df["obsTimeLocal"] = pd.to_datetime(df["obsTimeLocal"])
 
-    fig = px.line(
-        df,
-        x="obsTimeLocal",
-        y="metric.tempAvg",
-        title="Temperature Over Time",
-        labels={"obsTimeLocal": "Time", "metric.tempAvg": "Temperature (°C)"},
-        markers=True
-    )
+        fig = px.line(
+            df,
+            x="obsTimeLocal",
+            y="metric.tempAvg",
+            title="Temperature Over Time",
+            labels={"obsTimeLocal": "Time", "metric.tempAvg": "Temperature (°C)"},
+            markers=True
+        )
+        return fig
+    except Exception as e:
+        print(f"Error in create_temperature_plot: {str(e)}")
+        raise
 
-    return fig
 
 
 def create_stream_graph():
+    """Creates a streamgraph of snow and precipitation data"""
+    try:
+        json_path = os.path.join(os.path.dirname(__file__), "..", "data", "CoCoRaHS_FullReport.json")
+        with open(json_path, "r") as f:
+            data = json.load(f)
 
-    data = json.load( open('data/CoCoRaHS_FullReport.json'))
+        df = pd.DataFrame(data)
+        df['ObservationDate'] = pd.to_datetime(df['ObservationDate'], errors='coerce')
+        df = df.sort_values('ObservationDate')
 
-    df = pd.DataFrame(data)
+        def clean_column(col):
+            return pd.to_numeric(df[col].replace({'T': 0.1, 'NA': 0, '': 0}), errors='coerce').fillna(0)
 
-    df['ObservationDate'] = pd.to_datetime(df['ObservationDate'], errors='coerce')
-    df = df.sort_values('ObservationDate')
+        df['TotalPrecipAmt'] = clean_column('TotalPrecipAmt')
+        df['NewSnowDepth'] = clean_column('NewSnowDepth')
+        df['TotalSnowDepth'] = clean_column('TotalSnowDepth')
 
+        layers = [
+            df['TotalPrecipAmt'].values,
+            df['NewSnowDepth'].values,
+            df['TotalSnowDepth'].values
+        ]
+        layers = np.array(layers)
 
-    def clean_column(col):
-        return pd.to_numeric(df[col].replace({'T': 0.1, 'NA': 0, '': 0}), errors='coerce').fillna(0)
+        total = np.sum(layers, axis=0)
+        baseline = np.mean(np.cumsum(layers, axis=0), axis=0) - total / 2
 
-    df['TotalPrecipAmt'] = clean_column('TotalPrecipAmt')
-    df['NewSnowDepth'] = clean_column('NewSnowDepth')
-    df['TotalSnowDepth'] = clean_column('TotalSnowDepth')
+        top_bottom_pairs = []
+        current_baseline = baseline.copy()
 
+        for i in range(len(layers)):
+            top = current_baseline + layers[i]
+            bottom = current_baseline
+            top_bottom_pairs.append((bottom.copy(), top.copy()))
+            current_baseline = top
 
-    layers = [
-        df['TotalPrecipAmt'].values,
-        df['NewSnowDepth'].values,
-        df['TotalSnowDepth'].values
-    ]   
-    layers = np.array(layers)  
+        def smooth_line(x, y, points=300):
+            x_numeric = (x - x.min()).dt.total_seconds()
+            x_new = np.linspace(x_numeric.min(), x_numeric.max(), points)
+            spline = make_interp_spline(x_numeric, y, k=3)
+            y_smooth = spline(x_new)
+            x_smooth = pd.date_range(start=x.min(), end=x.max(), periods=points)
+            return x_smooth, y_smooth
 
+        fig = go.Figure()
+        x = df['ObservationDate']
+        layer_names = ['Total Precipitation', 'Snow Depth', 'Total Snow Depth']
 
-    total = np.sum(layers, axis=0)
-    baseline = np.mean(np.cumsum(layers, axis=0), axis=0) - total / 2
+        for i in reversed(range(len(top_bottom_pairs))):
+            bottom, top = top_bottom_pairs[i]
+            x_smooth, top_smooth = smooth_line(x, top)
+            _, bottom_smooth = smooth_line(x, bottom)
 
-    top_bottom_pairs = []
-    current_baseline = baseline.copy()
+            fig.add_trace(go.Scatter(
+                x=x_smooth,
+                y=top_smooth,
+                line=dict(width=0),
+                showlegend=False
+            ))
+            fig.add_trace(go.Scatter(
+                x=x_smooth,
+                y=bottom_smooth,
+                fill='tonexty',
+                name=layer_names[i],
+                line=dict(width=0),
+                opacity=0.4,
+                hoverinfo='x+y'
+            ))
 
-    for i in range(len(layers)):
-        top = current_baseline + layers[i]
-        bottom = current_baseline
-        top_bottom_pairs.append((bottom.copy(), top.copy()))
-        current_baseline = top
+        fig.update_layout(
+            title='Snow and Precipitation',
+            xaxis_title='Date',
+            yaxis_title='Measurements'
+        )
 
+        return fig
+    except Exception as e:
+        print(f"Error in create_stream_graph: {str(e)}")
+        raise
 
-    def smooth_line(x, y, points=300):
-        x_numeric = (x - x.min()).dt.total_seconds()
-        x_new = np.linspace(x_numeric.min(), x_numeric.max(), points)
-        spline = make_interp_spline(x_numeric, y, k=3)
-        y_smooth = spline(x_new)
-        x_smooth = pd.date_range(start=x.min(), end=x.max(), periods=points)
-        return x_smooth, y_smooth
-
-
-    fig = go.Figure()
-    x = df['ObservationDate']
-    layer_names = ['Total Precipitation', 'Snow Depth', 'Total Snow Depth']
-
-    for i in reversed(range(len(top_bottom_pairs))):
-        bottom, top = top_bottom_pairs[i]
-
-        x_smooth, top_smooth = smooth_line(x, top)
-        _, bottom_smooth = smooth_line(x, bottom)
-
-        fig.add_trace(go.Scatter(
-            x=x_smooth,
-            y=top_smooth,
-            line=dict(width=0),
-            showlegend=False
-        ))
-        fig.add_trace(go.Scatter(
-            x=x_smooth,
-            y=bottom_smooth,
-            fill='tonexty',
-            name=f'{layer_names[i]}',
-            line=dict(width=0),
-            opacity=0.4,
-            hoverinfo='x+y'
-        ))
-
-
-    fig.update_layout(
-        title='Snow and Precipitation',
-        xaxis_title='Date',
-        yaxis_title='Measurements'
-    )
-
-    return fig
 
 def create_beach_profile_heatmap():
     """Creates a simplified heatmap visualization of beach profiles"""
