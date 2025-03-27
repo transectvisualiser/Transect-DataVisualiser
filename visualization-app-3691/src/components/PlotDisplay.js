@@ -10,7 +10,9 @@ function PlotDisplay({ plotType }) {
         const fetchPlot = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`http://localhost:5001/plots/${plotType}`);
+             const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
+            const response = await fetch(`${API_URL}/plots/${plotType}`);
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -26,9 +28,10 @@ function PlotDisplay({ plotType }) {
                 setLoading(false);
             }
         };
-
+    
         fetchPlot();
     }, [plotType]);
+    
 
     if (loading) return <div>Loading plot...</div>;
     if (error) return <div className="error-message">{error}</div>;
