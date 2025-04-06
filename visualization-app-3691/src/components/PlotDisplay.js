@@ -10,9 +10,8 @@ function PlotDisplay({ plotType }) {
         const fetchPlot = async () => {
             try {
                 setLoading(true);
-             const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
-            const response = await fetch(`${API_URL}/plots/${plotType}`);
-
+                const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
+                const response = await fetch(`${API_URL}/plots/${plotType}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -28,10 +27,9 @@ function PlotDisplay({ plotType }) {
                 setLoading(false);
             }
         };
-    
+
         fetchPlot();
     }, [plotType]);
-    
 
     if (loading) return <div>Loading plot...</div>;
     if (error) return <div className="error-message">{error}</div>;
@@ -39,20 +37,21 @@ function PlotDisplay({ plotType }) {
 
     return (
         <Plot
-        data={plotData.data}
-        layout={{
-          ...plotData.layout,
-          autosize: true,
-          margin: { t: 40, b: 40, l: 40, r: 20 }, // optional: add some margin
-        }}
-        config={{
-          responsive: true,
-          ...plotData.config,
-        }}
-        useResizeHandler={true}
-        // Make the chart fill the parent container
-        style={{ width: '100%', height: '100%' }}
-      />
+            data={plotData.data}
+            layout={{
+                ...plotData.layout,
+                autosize: true,
+                margin: { t: 40, b: 40, l: 40, r: 20 },
+            }}
+            config={{
+                responsive: true,
+                ...plotData.config,
+                displayModeBar: true,
+                staticPlot: false,
+            }}
+            useResizeHandler={true}
+            style={{ width: '100%', height: '100%' }}
+        />
     );
 }
 

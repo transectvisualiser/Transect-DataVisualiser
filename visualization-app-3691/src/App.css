@@ -138,7 +138,22 @@
 .visualization-items-container {
   display: grid;
   gap: 30px;
-  grid-template-columns: repeat(var(--columns, 2), 1fr);
+  /* Default: show 3 columns */
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Medium screens: show 2 columns */
+@media (max-width: 1800px) {
+  .visualization-items-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Small screens: show 1 column */
+@media (max-width: 1168px) {
+  .visualization-items-container {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }
 
 /* Keyframe animation for hover effect */

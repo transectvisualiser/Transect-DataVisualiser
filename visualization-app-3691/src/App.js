@@ -43,16 +43,11 @@ const categories = {
  
 function App() {
   const [filterKeyword, setFilterKeyword] = useState("All");
-  const [columns, setColumns] = useState(2); // Default to 2 columns
  
   const handleFilterChange = (event) => {
     setFilterKeyword(event.target.value);
   };
  
-  // Slider callback
-  const handleSliderChange = (event) => {
-    setColumns(parseInt(event.target.value, 10));
-  };
  
   const allCategories = ["All", ...new Set(Object.values(categories))];
   
@@ -75,19 +70,6 @@ function App() {
             </option>
           ))}
         </select>
- 
-        <div className="column-slider">
-          <label htmlFor="column-count-slider">Columns: </label>
-          <input
-            id="column-count-slider"
-            type="range"
-            min="1"
-            max="5"
-            value={columns}
-            onChange={handleSliderChange}
-          />
-          <span className="slider-value">{columns}</span>
-        </div>
       </section>
  
       <section className="visualization-grid">
@@ -95,7 +77,7 @@ function App() {
         {(filterKeyword === "All" || filterKeyword === categories.attribute) && (
           <div className="visualization-category">
             <h2 className="visualization-category-title">Physical Beach Attributes & Morphology</h2>
-            <div className="visualization-items-container" style={{"--columns": columns}}>
+            <div className="visualization-items-container">
               <div className="visualization-item">
                 <h2>Scatter Plot</h2>
                 <PlotDisplay plotType="scatter" />
@@ -124,7 +106,7 @@ function App() {
         {(filterKeyword === "All" || filterKeyword === categories.Pollution) && (
           <div className="visualization-category">
             <h2 className="visualization-category-title">Environmental Impact / Pollution</h2>
-            <div className="visualization-items-container" style={{"--columns": columns}}>
+            <div className="visualization-items-container">
               <div className="visualization-item">
                 <h2>Litter Histogram</h2>
                 <PlotDisplay plotType="litter" />
@@ -137,14 +119,10 @@ function App() {
         {(filterKeyword === "All" || filterKeyword === categories.sedimentBeach) && (
           <div className="visualization-category">
             <h2 className="visualization-category-title">Sediment and Beach Type</h2>
-            <div className="visualization-items-container" style={{"--columns": columns}}>
+            <div className="visualization-items-container">
               <div className="visualization-item">
                 <h2>Beaches by Sediment Type</h2>
                 <PlotDisplay plotType="sediment" />
-              </div>
-              <div className="visualization-item">
-                <h2>Sediment Distribution</h2>
-                <PlotDisplay plotType="sediment-distribution" />
               </div>
             </div>
           </div>
@@ -154,7 +132,7 @@ function App() {
         {(filterKeyword === "All" || filterKeyword === categories.regionalCluster) && (
           <div className="visualization-category">
             <h2 className="visualization-category-title">Regional Clustering & Grouping</h2>
-            <div className="visualization-items-container" style={{"--columns": columns}}>
+            <div className="visualization-items-container">
               <div className="visualization-item">
                 <h2>Region Clustering (Dendrogram)</h2>
                 <PlotDisplay plotType="dendrogram" />
@@ -179,7 +157,7 @@ function App() {
         {(filterKeyword === "All" || filterKeyword === categories.mapping) && (
           <div className="visualization-category">
             <h2 className="visualization-category-title">Spatial and Density Mapping</h2>
-            <div className="visualization-items-container" style={{"--columns": columns}}>
+            <div className="visualization-items-container">
               <div className="visualization-item">
                 <h2>Density Map</h2>
                 <PlotDisplay plotType="density" />
@@ -192,7 +170,7 @@ function App() {
         {(filterKeyword === "All" || filterKeyword === categories.meteorlogicalEnv) && (
           <div className="visualization-category">
             <h2 className="visualization-category-title">Meteorological and Environmental</h2>
-            <div className="visualization-items-container" style={{"--columns": columns}}>
+            <div className="visualization-items-container">
               <div className="visualization-item">
                 <h2>Temperature Trends</h2>
                 <PlotDisplay plotType="time" />
@@ -217,7 +195,7 @@ function App() {
         {(filterKeyword === "All" || filterKeyword === categories.Additional) && (
           <div className="visualization-category">
             <h2 className="visualization-category-title">Additional Visualizations</h2>
-            <div className="visualization-items-container" style={{"--columns": columns}}>
+            <div className="visualization-items-container">
               <div className="visualization-item">
                 <h2>Beach Characteristics Table</h2>
                 <PlotDisplay plotType="text" />

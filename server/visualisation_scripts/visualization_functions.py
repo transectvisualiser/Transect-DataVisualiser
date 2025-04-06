@@ -10,7 +10,7 @@ from scipy.interpolate import make_interp_spline
 
 
 # Define file path dynamically
-csv_path = os.path.join(os.path.dirname(__file__), "General List (CSES-NS-Summary-Evaluations).csv")
+csv_path = os.path.join(os.path.dirname(__file__),  "..", "data", "General List (CSES-NS-Summary-Evaluations).csv")   
 
 # Load dataset
 try:
@@ -35,8 +35,7 @@ def create_scatter_plot():
     fig = px.scatter(df, 
                     x='Cliff height',
                     y='Vegetation cover',
-                    color='Region',
-                    title='Beach Characteristics')
+                    color='Region')
     return fig
 
 def create_box_plot():
@@ -45,8 +44,7 @@ def create_box_plot():
 
     fig = px.box(df,
                  x='Region',
-                 y='Cliff height',
-                 title='Cliff Height Distribution by Region')
+                 y='Cliff height')
     return fig
 
 def create_bar_chart():
@@ -59,7 +57,6 @@ def create_bar_chart():
         fig = px.bar(grouped_data,
                     x='Region',
                     y='mean',
-                    title='Average Beach Width by Region',
                     labels={'mean': 'Average Beach Width'})
         return fig
         
@@ -86,7 +83,6 @@ def create_litter_histogram():
         fig = px.histogram(df_filtered, 
                            x="Litter", 
                            nbins=bins, 
-                           title="Litter Distribution Level Across Beaches",
                            labels={"Litter": "Litter Level"},
                            opacity=0.7,
                            color_discrete_sequence=["#007bff"])  # Custom color
@@ -116,7 +112,6 @@ def create_beach_width_bar_chart():
         fig = px.bar(grouped_data,
                     x="Region",
                     y="Beach width",
-                    title="Average Beach Width by Region",
                     labels={"Beach width": "Average Beach Width"},
                     color="Region",
                     color_discrete_sequence=px.colors.qualitative.Set1)  # Custom colors
@@ -200,7 +195,6 @@ def create_dune_polar_chart():
 
         # Layout with proper legend
         fig.update_layout(
-            title="Average Dunes by Region (Circular Plot)",
             polar=dict(
                 radialaxis=dict(showticklabels=False, showgrid=False, range=[0, inner_radius + 2.5]),
                 angularaxis=dict(showgrid=False, showticklabels=False),
@@ -253,7 +247,6 @@ def create_sediment_bar_chart():
 
         # Improve layout for clarity
         fig.update_layout(
-            title="Beaches by Sediment Type and Region",
             xaxis_title="Type of Sediment",
             yaxis_title="Number of Distinct Beaches",
             barmode="group",  # ✅ Grouped bars instead of stacked
@@ -290,8 +283,6 @@ def create_dendrogram_chart():
 
         # Update layout for aesthetics
         fig.update_layout(
-            title="Region Clustering (Dendrogram)",
-            title_font=dict(size=24),
             xaxis_title="Regions",
             yaxis_title="Distance (Ward's Method)",
             height=600,
@@ -326,8 +317,6 @@ def create_cliff_height_dendrogram():
         fig = ff.create_dendrogram(X, orientation='top', labels=labels, linkagefun=lambda x: Z)
 
         fig.update_layout(
-            title="Region Clustering Based on Average Cliff Height",
-            title_font=dict(size=24),
             xaxis_title="Regions",
             yaxis_title="Distance (Ward's Method)",
             height=600,
@@ -361,8 +350,6 @@ def create_dunes_dendrogram():
         fig = ff.create_dendrogram(X, orientation='top', labels=labels, linkagefun=lambda x: Z)
 
         fig.update_layout(
-            title="Region Clustering Based on Average Dunes",
-            title_font=dict(size=24),
             xaxis_title="Regions",
             yaxis_title="Distance (Ward's Method)",
             height=600,
@@ -396,8 +383,6 @@ def create_vegetation_cover_dendrogram():
         fig = ff.create_dendrogram(X, orientation='top', labels=labels, linkagefun=lambda x: Z)
 
         fig.update_layout(
-            title="Region Clustering Based on Average Vegetation Cover",
-            title_font=dict(size=24),
             xaxis_title="Regions",
             yaxis_title="Distance (Ward's Method)",
             height=600,
@@ -415,32 +400,34 @@ def create_vegetation_cover_dendrogram():
     
 def create_density_map():
     """Creates an interactive density map of beaches"""
-    # Read data
     validate_dataframe(["Latitude", "Longitude", "Beach width", "CSES Label", "Beach", "Park"])
-    # Convert Beach width to numeric
     df["Beach width"] = pd.to_numeric(df["Beach width"], errors="coerce")
-    
-    # Create interactive map using Scattermapbox instead of scatter_mapbox
+    df["CSES Factor"] = pd.factorize(df["CSES Label"])[0]
+
     fig = go.Figure()
 
-    for park_type in df['Park'].unique():
-        park_data = df[df['Park'] == park_type]
-        
-        fig.add_trace(go.Scattermapbox(
-            lat=park_data["Latitude"],
-            lon=park_data["Longitude"],
-            mode='markers',
-            marker=dict(
-                size=park_data["Beach width"]*2,
-                color=pd.factorize(park_data["CSES Label"])[0],
-                colorscale='Viridis',
-                showscale=True,
-                colorbar=dict(title="CSES Classification")
-            ),
-            text=park_data["Beach"],
-            hoverinfo='text',
-            name=park_type
-        ))
+    # Add all data in ONE trace → So colorbar will appear clean
+    fig.add_trace(go.Scattermapbox(
+        lat=df["Latitude"],
+        lon=df["Longitude"],
+        mode='markers',
+        marker=dict(
+            size=df["Beach width"] * 2,
+            color=df["CSES Factor"],
+            colorscale='Viridis',
+            showscale=True,
+            colorbar=dict(
+                title="CSES Classification",
+                x=1.05,
+                y=0.5,
+                xanchor="left",
+                yanchor="middle"
+            )
+        ),
+        text=df["Beach"],
+        hoverinfo='text',
+        name="Beaches"
+    ))
 
     fig.update_layout(
         title="Interactive Beach Map of Nova Scotia",
@@ -450,7 +437,11 @@ def create_density_map():
             zoom=7
         ),
         showlegend=True,
-        margin={"r":0,"t":30,"l":0,"b":0}
+        legend=dict(
+            x=0.01,
+            y=0.99
+        ),
+        margin={"r": 0, "t": 30, "l": 0, "b": 0}
     )
 
     return fig
@@ -458,7 +449,7 @@ def create_density_map():
 def create_time_plot():
     """Creates an interactive temperature and dew point plot"""
     try:
-        file_path = os.path.join(os.path.dirname(__file__), "..", "visualisation_scripts", "Date_Timeplot.csv")
+        file_path = os.path.join(os.path.dirname(__file__), "..", "data", "Date_Timeplot.csv")
         df = pd.read_csv(file_path)
         df["Time"] = pd.to_datetime(df["Time"], format="%I:%M %p")
 
@@ -470,7 +461,6 @@ def create_time_plot():
         fig.add_trace(go.Scatter(x=df["Time"], y=df["Dew Point (C)"], name="Dew Point (°C)", mode='lines+markers'))
 
         fig.update_layout(
-            title="Temperature & Dew Point Trend Throughout the Day",
             xaxis_title="Time of Day",
             yaxis_title="Temperature (°C) / Dew Point (°C)",
             hovermode='x unified',
@@ -506,7 +496,6 @@ def create_text_table():
 
     # Update layout
     fig.update_layout(
-        title='Beach Characteristics Interactive Visualization',
         xaxis_title='Cliff Height',
         yaxis_title='Vegetation Cover',
         hovermode='closest'
@@ -536,7 +525,6 @@ def create_sediment_plot():
         ))
     
     fig.update_layout(
-        title="Beaches by Sediment Type and Region",
         xaxis_title="Type of Sediment",
         yaxis_title="Number of Distinct Beaches",
         barmode='group',
@@ -578,7 +566,6 @@ def create_rose_diagram():
         ))
 
         fig.update_layout(
-            title="Interactive Wind Rose Diagram",
             polar=dict(
                 angularaxis=dict(
                     direction="clockwise",
@@ -608,7 +595,6 @@ def create_temperature_plot():
             df,
             x="obsTimeLocal",
             y="metric.tempAvg",
-            title="Temperature Over Time",
             labels={"obsTimeLocal": "Time", "metric.tempAvg": "Temperature (°C)"},
             markers=True
         )
@@ -690,7 +676,6 @@ def create_stream_graph():
             ))
 
         fig.update_layout(
-            title='Snow and Precipitation',
             xaxis_title='Date',
             yaxis_title='Measurements'
         )
@@ -745,8 +730,7 @@ def create_beach_profile_heatmap():
             padded_profiles,  # Use padded profiles instead of profiles
             y=beaches,
             color_continuous_scale="Viridis",
-            labels={"color": "Elevation"},
-            title="Beach Profile Elevation"
+            labels={"color": "Elevation"}
         )
         
         # Use proper colorbar configuration without titleside
